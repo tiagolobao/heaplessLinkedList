@@ -2,9 +2,9 @@
 #include "heaplessLinkedList.h"
 #include "ringBuffer.h"
 
-
 int main(void)
 {
-    //printf("Hello World => %d\n", addOne(1));
+    printf("...Starting test...\n");
+    printf("...Starting test...\n");
     return 0;
 }

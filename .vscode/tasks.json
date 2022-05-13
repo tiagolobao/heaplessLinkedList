@@ -1,0 +1,22 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "tasks": [
+        {
+            "type": "shell",
+            "label": "build UnitTest",
+            "command": "gcc -g -pedantic-errors -Wall -Wextra -Werror ./src/heaplessLinkedList.c ./src/ringBuffer.c ./test/test.c -I ./inc -o test.exe",
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        }
+    ],
+    "version": "2.0.0"
+}
