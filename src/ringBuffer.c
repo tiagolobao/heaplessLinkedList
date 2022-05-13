@@ -39,7 +39,7 @@ bool ringBuffer_addData(ringBuffer* rb, tIndex data)
 {
     bool wasOperationSuccessful = false;
 
-    if( RING_BUFFER_FULL == rb->lenght ){
+    if( rb->lenght < RING_BUFFER_FULL ){
         rb->buffer[rb->headIndex] = data;
         __incrementIndex__( &(rb->headIndex) );
         rb->lenght++;
@@ -54,7 +54,7 @@ tIndex ringBuffer_popData(ringBuffer* rb)
 {
     tIndex popedData = HLL_NULL;
 
-    if( RING_BUFFER_EMPTY == rb->lenght ){
+    if( RING_BUFFER_EMPTY != rb->lenght ){
         popedData = rb->buffer[rb->tailIndex];
         __incrementIndex__( &(rb->tailIndex) );
         rb->lenght--;
