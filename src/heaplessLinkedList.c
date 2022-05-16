@@ -12,7 +12,7 @@
  *****************************************/
 inline static tIndex pointerToIndex(heaplessList* l, heaplessListNode* n)
 {
-    return (tIndex) ( (n - l->linkedList) / sizeof(HEAPLESS_LIST_TYPE) );
+    return (tIndex) ( (n - l->linkedList) / sizeof(tListData) );
 }
 
 /*****************************************
@@ -20,16 +20,17 @@ inline static tIndex pointerToIndex(heaplessList* l, heaplessListNode* n)
  *****************************************/
 
 // --------------------------------------------------------------------
-void heaplessList_init(heaplessList* l)
+void heaplessList_init(heaplessList* l, tIndex* ringBufferArray, heaplessListNode* heapArray, tIndex maxSize)
 {
     tIndex i;
-
+    l->linkedList = heapArray; 
+    l->cMaxLength = maxSize;
     l->firstNodeIndex = HLL_NULL;
     l->lastNodeIndex = HLL_NULL;
-    ringBuffer_init( &(l->allocationTable) );
+    ringBuffer_init( &(l->allocationTable), ringBufferArray, maxSize );
 
     // add the list of free spaces in the ringBuffer
-    for( i = 0; i < HEAPLESS_LIST_MAX_SIZE; i++ ){
+    for( i = 0; i < maxSize; i++ ){
         ringBuffer_addData( &(l->allocationTable), i );
     }
 }
@@ -132,29 +133,29 @@ heaplessListNode* heaplessList_initItEnd(heaplessList* l)
 }
 
 // --------------------------------------------------------------------
-bool heaplessList_nextIt(heaplessList* l, heaplessListNode* n)
+bool heaplessList_nextIt(heaplessList* l, heaplessListNode** n)
 {
-    bool isLastElement;
-    if(HLL_NULL == n->nextNode){
-        isLastElement = true;
+    bool isNotLastElement;
+    if(HLL_NULL == (*n)->nextNode){
+        isNotLastElement = false;
     }
     else{
-        n = &( l->linkedList[n->nextNode] );
-        isLastElement = false;
+        *n = &( l->linkedList[(*n)->nextNode] );
+        isNotLastElement = true;
     }
-    return isLastElement;
+    return isNotLastElement;
 }
 
 // --------------------------------------------------------------------
-bool heaplessList_previousIt(heaplessList* l, heaplessListNode* n)
+bool heaplessList_previousIt(heaplessList* l, heaplessListNode** n)
 {
     bool isFirstElement;
-    if(HLL_NULL == n->previousNode){
-        isFirstElement = true;
+    if(HLL_NULL == (*n)->previousNode){
+        isFirstElement = false;
     }
     else{
-        n = &( l->linkedList[n->previousNode] );
-        isFirstElement = false;
+        *n = &( l->linkedList[(*n)->previousNode] );
+        isFirstElement = true;
     }
     return isFirstElement;
 }
@@ -166,25 +167,25 @@ tListData heaplessList_getItData(heaplessListNode* n)
 }
 
 // --------------------------------------------------------------------
-bool heaplessList_removeAndNextIt(heaplessList* l, heaplessListNode* n)
+bool heaplessList_removeAndNextIt(heaplessList* l, heaplessListNode** n)
 {
     bool isOperationOk = true;
-    if(HLL_NULL == n->previousNode){ // isFirstElement
+    if(HLL_NULL == (*n)->previousNode){ // isFirstElement
         isOperationOk = heaplessList_removeFirst(l);
-        n = heaplessList_initIt(l);
+        *n = heaplessList_initIt(l);
     }
-    else if(HLL_NULL == n->nextNode){ // isLastElement
+    else if(HLL_NULL == (*n)->nextNode){ // isLastElement
         isOperationOk = heaplessList_removeLast(l);
-        n = NULL_PTR;
+        *n = NULL_PTR;
     }
     else{
         // find the index to the array that stores the list, in order to free the memory
-        tIndex nodeIndexinList = pointerToIndex(l, n);
+        tIndex nodeIndexinList = pointerToIndex(l, *n);
         isOperationOk = ringBuffer_addData( &(l->allocationTable), nodeIndexinList ); // free
         if( isOperationOk ){
-            l->linkedList[n->previousNode].nextNode = n->nextNode;
-            l->linkedList[n->nextNode].previousNode = n->previousNode;
-            n = &( l->linkedList[n->nextNode] );
+            l->linkedList[(*n)->previousNode].nextNode = (*n)->nextNode;
+            l->linkedList[(*n)->nextNode].previousNode = (*n)->previousNode;
+            *n = &( l->linkedList[(*n)->nextNode] );
         }
     }
     return isOperationOk;

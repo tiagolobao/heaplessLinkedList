@@ -25,10 +25,11 @@ typedef struct{
 } heaplessListNode;
 
 typedef struct{
-    heaplessListNode linkedList[HEAPLESS_LIST_MAX_SIZE];
+    heaplessListNode* linkedList;
     ringBuffer allocationTable;
     tIndex firstNodeIndex;
     tIndex lastNodeIndex;
+    tIndex cMaxLength;
 } heaplessList;
 
 /*******************************************************
@@ -41,7 +42,7 @@ typedef struct{
  * 
  * @param l pointer to the list
  */
-void heaplessList_init(heaplessList* l);
+void heaplessList_init(heaplessList* l, tIndex* ringBufferArray, heaplessListNode* heapArray, tIndex maxSize);
 
 /**
  * @brief add data to the list
@@ -122,7 +123,7 @@ heaplessListNode* heaplessList_initItEnd(heaplessList* l);
  * @return true means operation successful (the node is not the last one)
  * @return false means operation not successful (the node is the last one)
  */
-bool heaplessList_nextIt(heaplessList* l, heaplessListNode* n);
+bool heaplessList_nextIt(heaplessList* l, heaplessListNode** n);
 
 /**
  * @brief get previous node from the heaplessList
@@ -132,7 +133,7 @@ bool heaplessList_nextIt(heaplessList* l, heaplessListNode* n);
  * @return true means operation successful (the node is not the last one)
  * @return false means operation not successful (the node is the last one)
  */
-bool heaplessList_previousIt(heaplessList* l, heaplessListNode* n);
+bool heaplessList_previousIt(heaplessList* l, heaplessListNode** n);
 
 /**
  * @brief returns the data from the node
@@ -149,6 +150,6 @@ tListData heaplessList_getItData(heaplessListNode* n);
  * @param n pointer to the node
  * OBS: the output node will be NULL if this is the last node
  */
-bool heaplessList_removeAndNextIt(heaplessList* l, heaplessListNode* n);
+bool heaplessList_removeAndNextIt(heaplessList* l, heaplessListNode** n);
 
 #endif /* HEAPLESSLINKEDLIST_H */

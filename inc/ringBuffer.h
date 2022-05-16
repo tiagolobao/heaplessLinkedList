@@ -13,17 +13,16 @@
  *****************************************/
 
 #define RING_BUFFER_EMPTY 0u
-#define RING_BUFFER_FULL HEAPLESS_LIST_MAX_SIZE
-
 
 /*****************************************
  ********** Type definitions *************
  *****************************************/
 typedef struct {
-  tIndex buffer[HEAPLESS_LIST_MAX_SIZE];
+  tIndex* buffer;
   tIndex tailIndex;
   tIndex headIndex;
   tIndex lenght;
+  tIndex cMaxlenght;
 } ringBuffer;
 
 /*****************************************
@@ -37,7 +36,7 @@ typedef struct {
  * @param rb [ pointer to the ring buffer to be init ]
  * @return void
  */
-void ringBuffer_init(ringBuffer* rb);
+void ringBuffer_init(ringBuffer* rb, tIndex* buffer, tIndex maxLength);
 
 /**
  * @brief adds one element to the ring buffer on the first

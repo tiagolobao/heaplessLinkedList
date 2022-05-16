@@ -17,9 +17,9 @@
  * 
  * @param i [ pointer to the index ]
  */
-inline static void __incrementIndex__(tIndex* i)
+inline static void __incrementIndex__(tIndex* i, tIndex maxSize)
 {
-    (*i)++; if( *i == HEAPLESS_LIST_MAX_SIZE ) *i = 0;
+    (*i)++; if( *i == maxSize ) *i = 0;
 }
 
 /*****************************************
@@ -27,8 +27,10 @@ inline static void __incrementIndex__(tIndex* i)
  *****************************************/
 
 // --------------------------------------------------------------------
-void ringBuffer_init(ringBuffer* rb)
-{
+void ringBuffer_init(ringBuffer* rb, tIndex* buffer, tIndex maxSize)
+{   
+    rb->buffer = buffer;
+    rb->cMaxlenght = maxSize;
     rb->headIndex = 0u;
     rb->tailIndex = 0u;
     rb->lenght = RING_BUFFER_EMPTY;
@@ -39,9 +41,9 @@ bool ringBuffer_addData(ringBuffer* rb, tIndex data)
 {
     bool wasOperationSuccessful = false;
 
-    if( rb->lenght < RING_BUFFER_FULL ){
+    if( rb->lenght < rb->cMaxlenght ){
         rb->buffer[rb->headIndex] = data;
-        __incrementIndex__( &(rb->headIndex) );
+        __incrementIndex__( &(rb->headIndex), rb->cMaxlenght );
         rb->lenght++;
         wasOperationSuccessful = true;
     }
@@ -54,9 +56,9 @@ tIndex ringBuffer_popData(ringBuffer* rb)
 {
     tIndex popedData = HLL_NULL;
 
-    if( RING_BUFFER_EMPTY != rb->lenght ){
+    if( rb->lenght > RING_BUFFER_EMPTY ){
         popedData = rb->buffer[rb->tailIndex];
-        __incrementIndex__( &(rb->tailIndex) );
+        __incrementIndex__( &(rb->tailIndex), rb->cMaxlenght );
         rb->lenght--;
     }
     

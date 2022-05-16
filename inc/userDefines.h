@@ -17,33 +17,11 @@
 
 // This is the type of data stored inside the linked list
 // It does not support strucs, but maybe you can store a pointer
-#ifndef HEAPLESS_LIST_TYPE 
-#define HEAPLESS_LIST_TYPE uint16_t
-#endif
+typedef uint16_t tListData;
+#define HLL_NULL 0xFFFF
 
-// This is the maximum number of elements the list can have
-#ifndef HEAPLESS_LIST_MAX_SIZE 
-#define HEAPLESS_LIST_MAX_SIZE 300
-#endif
+// Depends on the maximum number of elements in the list/array
+typedef uint16_t tIndex;
 
-/*****************************************
- ********* processing user defines *******
- *****************************************/
-
-typedef HEAPLESS_LIST_TYPE tListData;
-
-// choosing the type of the index accordingly
-#if HEAPLESS_LIST_MAX_SIZE < 0xFF
-    typedef uint8_t tIndex;
-    #define HLL_NULL 0xFF
-#elif HEAPLESS_LIST_MAX_SIZE > 0xFF && HEAPLESS_LIST_MAX_SIZE < 0xFFFF
-    typedef uint16_t tIndex;
-    #define HLL_NULL 0xFFFF
-#elif HEAPLESS_LIST_MAX_SIZE > 0xFFFF
-    typedef uint32_t tIndex;
-    #define HLL_NULL 0xFFFFFFFF
-#else
-    #error Index 0xFFFF | 0xFF is used for empty list. Please use another LIST_MAX_SIZE
-#endif
 
 #endif /* HLL_USERDEFINES_H */

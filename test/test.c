@@ -3,6 +3,16 @@
 #include "heaplessLinkedList.h"
 #include "ringBuffer.h"
 
+#define HEAPLESS_LIST_MAX_SIZE 300
+
+static tIndex ringBufferArray[HEAPLESS_LIST_MAX_SIZE];
+
+static tIndex allocationArray[HEAPLESS_LIST_MAX_SIZE];
+static heaplessListNode heapMemory[HEAPLESS_LIST_MAX_SIZE];
+
+
+
+
 int test(bool condition, char* message){
     int r = 0;
     if (!condition){
@@ -40,7 +50,7 @@ int main(void)
     ringBuffer my_rb;
     tIndex popedData;
     tIndex previousData;
-
+    heaplessListNode* my_n;
 
     printf("...Starting test...\n");
 
@@ -50,7 +60,7 @@ int main(void)
     
     //void ringBuffer_init(ringBuffer* rb)
     // ---------------------------------------------------------
-    ringBuffer_init(&my_rb);
+    ringBuffer_init(&my_rb, ringBufferArray, HEAPLESS_LIST_MAX_SIZE);
     testResults |= test( 
         (
             my_rb.headIndex == 0 &&
@@ -264,7 +274,7 @@ int main(void)
 
     // void heaplessList_init(heaplessList* l);
     // ---------------------------------------------------------
-    heaplessList_init(&my_l);
+    heaplessList_init(&my_l, allocationArray, heapMemory, HEAPLESS_LIST_MAX_SIZE);
     testResults |= test(
         (
             my_l.firstNodeIndex == HLL_NULL &&
@@ -356,12 +366,16 @@ int main(void)
         functionReturn == true),
         "HeaplessList - 5.0 check previous state"
     );
+
+    // ---------------------------------------------------------
     functionReturn = heaplessList_removeLast(&my_l);
     testResults |= test(
         (my_l.linkedList[my_l.lastNodeIndex].data == 225 &&
         functionReturn == true),
         "HeaplessList - 5.1 remove last element (without getting it)"
     );
+
+    // ---------------------------------------------------------
     functionReturn = heaplessList_getFirst(&my_l, &my_data);
     testResults |= test(
         (
@@ -373,13 +387,51 @@ int main(void)
     printlist(&my_l);
 
 
+    // heaplessListNode* heaplessList_initItEnd(heaplessList* l);
     // heaplessListNode* heaplessList_initIt(heaplessList* l);
+    // tListData heaplessList_getItData(heaplessListNode* n);
     // ---------------------------------------------------------
+    my_n = heaplessList_initItEnd(&my_l);
+    testResults |= test(
+            heaplessList_getItData(my_n) == 225,
+        "HeaplessList - 6.1 Init Iterator from the end"
+    );
 
+    // ---------------------------------------------------------
+    my_n = heaplessList_initIt(&my_l);
+    testResults |= test(
+            heaplessList_getItData(my_n) == 522,
+        "HeaplessList - 6.1 Init Iterator from the beggining"
+    );
 
     // bool heaplessList_nextIt(heaplessList* l, heaplessListNode* n);
+    // ---------------------------------------------------------
+    functionReturn = heaplessList_nextIt(&my_l, &my_n);
+    testResults |= test(
+            heaplessList_getItData(my_n) == 225 && functionReturn == true,
+        "HeaplessList - 7.1 Iterate the list"
+    );
+
+    functionReturn = heaplessList_nextIt(&my_l, &my_n);
+    testResults |= test(
+            heaplessList_getItData(my_n) == 225 && functionReturn == false,
+        "HeaplessList - 7.2 Iterate the list (no change because it was the end)"
+    );
+
     // bool heaplessList_previousIt(heaplessList* l, heaplessListNode* n);
-    // tListData heaplessList_getItData(heaplessListNode* n);
+    // ---------------------------------------------------------
+    functionReturn = heaplessList_previousIt(&my_l, &my_n);
+    testResults |= test(
+            heaplessList_getItData(my_n) == 522 && functionReturn == true,
+        "HeaplessList - 7.3 Iterate the list backwards"
+    );
+
+    functionReturn = heaplessList_previousIt(&my_l, &my_n);
+    testResults |= test(
+            heaplessList_getItData(my_n) == 522 && functionReturn == false,
+        "HeaplessList - 7.4 Iterate the list backwards (no change because it was the beggining)"
+    );
+
     // bool heaplessList_removeAndNextIt(heaplessList* l, heaplessListNode* n);
 
 
