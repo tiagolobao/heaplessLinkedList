@@ -432,13 +432,49 @@ int main(void)
         "HeaplessList - 7.4 Iterate the list backwards (no change because it was the beggining)"
     );
 
+
+// ---------------------------------------------------------
+// ---------------------------------------------------------
+// This part is the most important one!!!
+// ---------------------------------------------------------
+// ---------------------------------------------------------
+// ---------------------------------------------------------
     // bool heaplessList_removeAndNextIt(heaplessList* l, heaplessListNode* n);
+    // ---------------------------------------------------------
+    // ---------------------------------------------------------
+    // ---------------------------------------------------------
+    // ---------------------------------------------------------
+    // ---------------------------------------------------------
+    // ---------------------------------------------------------
+    // ---------------------------------------------------------
+    // ---------------------------------------------------------
+    while( heaplessList_removeLast(&my_l) ); // empty the list
+    printlist(&my_l);
 
+    count = 20;
+    while( heaplessList_append(&my_l, count) ) count++;
+    testResults |= test(
+        my_l.allocationTable.lenght == 0,
+        "HeaplessList - 8.1 Fill List till the end"
+    );
 
+    // ---------------------------------------------------------
+    my_n = heaplessList_initIt(&my_l);
+    functionReturn = true;
+    count = 20;
+    while(functionReturn){
+        testResults |= test(
+            heaplessList_getItData(my_n) == count,
+            "HeaplessList - 8.2 read all the elements"
+        );
+        functionReturn = heaplessList_nextIt(&my_l,&my_n);
+        count++;
+    }
 
+    my_n = heaplessList_initIt(&my_l);
+    // bool heaplessList_removeAndNextIt(heaplessList* l, heaplessListNode** n);
 
-
-
+    
 
     return testResults;
 }

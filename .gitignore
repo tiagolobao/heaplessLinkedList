@@ -1,3 +1,6 @@
+# dbg files
+*.stackdump
+
 # Prerequisites
 *.d
 

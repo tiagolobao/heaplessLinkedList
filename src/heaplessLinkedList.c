@@ -94,10 +94,16 @@ bool heaplessList_removeFirst(heaplessList* l)
 
     if( HLL_NULL != l->firstNodeIndex ){
         isOperationOk = ringBuffer_addData( &(l->allocationTable), l->firstNodeIndex ); // free
-        if( isOperationOk ){
-            nodeIndex = l->linkedList[l->firstNodeIndex].nextNode;
-            l->linkedList[nodeIndex].previousNode = HLL_NULL;
-            l->firstNodeIndex = nodeIndex;
+        if( isOperationOk ){ // means the list was not empty
+            if( l->lastNodeIndex == l->firstNodeIndex ){ // means it the last element to be removed
+                l->lastNodeIndex = HLL_NULL;
+                l->firstNodeIndex = HLL_NULL;
+            }
+            else{
+                nodeIndex = l->linkedList[l->firstNodeIndex].nextNode;
+                l->linkedList[nodeIndex].previousNode = HLL_NULL;
+                l->firstNodeIndex = nodeIndex;
+            }
         }
     }
     return isOperationOk;
@@ -111,10 +117,16 @@ bool heaplessList_removeLast(heaplessList* l)
 
     if( HLL_NULL != l->lastNodeIndex ){
         isOperationOk = ringBuffer_addData( &(l->allocationTable), l->lastNodeIndex ); // free
-        if( isOperationOk ){
-            nodeIndex = l->linkedList[l->lastNodeIndex].previousNode;
-            l->linkedList[nodeIndex].nextNode = HLL_NULL;
-            l->lastNodeIndex = nodeIndex;
+        if( isOperationOk ){ // means the list was not empty
+            if( l->lastNodeIndex == l->firstNodeIndex ){ // means is the last element to be removed
+                l->lastNodeIndex = HLL_NULL;
+                l->firstNodeIndex = HLL_NULL;
+            }
+            else{
+                nodeIndex = l->linkedList[l->lastNodeIndex].previousNode;
+                l->linkedList[nodeIndex].nextNode = HLL_NULL;
+                l->lastNodeIndex = nodeIndex;
+            }
         }
     }
     return isOperationOk;
