@@ -26,9 +26,6 @@ void heaplessList_init(heaplessList* l)
 
     l->firstNodeIndex = HLL_NULL;
     l->lastNodeIndex = HLL_NULL;
-    l->linkedList[l->firstNodeIndex].previousNode = HLL_NULL;
-    l->linkedList[l->firstNodeIndex].nextNode = HLL_NULL;
-    l->linkedList[l->firstNodeIndex].data = 0u;
     ringBuffer_init( &(l->allocationTable) );
 
     // add the list of free spaces in the ringBuffer
@@ -56,6 +53,7 @@ bool heaplessList_append(heaplessList* l, tListData data)
         // other elements case
         else{
             l->linkedList[i].previousNode = l->lastNodeIndex;
+            l->linkedList[i].nextNode = HLL_NULL;
             l->linkedList[l->lastNodeIndex].nextNode = i;
             l->lastNodeIndex = i;
             l->linkedList[i].data = data;
@@ -122,7 +120,7 @@ bool heaplessList_removeLast(heaplessList* l)
 }
 
 // --------------------------------------------------------------------
-heaplessListNode* heaplessList_initItBeggining(heaplessList* l)
+heaplessListNode* heaplessList_initIt(heaplessList* l)
 {
     return &( l->linkedList[l->firstNodeIndex] );
 }
@@ -173,7 +171,7 @@ bool heaplessList_removeAndNextIt(heaplessList* l, heaplessListNode* n)
     bool isOperationOk = true;
     if(HLL_NULL == n->previousNode){ // isFirstElement
         isOperationOk = heaplessList_removeFirst(l);
-        n = heaplessList_initItBeggining(l);
+        n = heaplessList_initIt(l);
     }
     else if(HLL_NULL == n->nextNode){ // isLastElement
         isOperationOk = heaplessList_removeLast(l);

@@ -12,6 +12,24 @@ int test(bool condition, char* message){
     return r;
 }
 
+void printlist(heaplessList* l)
+{
+    tIndex j;
+
+    if( l->firstNodeIndex != HLL_NULL ){
+        printf("heapless list -> ");
+        j  = l->firstNodeIndex;
+        while(j != HLL_NULL){
+            printf("%d ", l->linkedList[j].data);
+            j = l->linkedList[j].nextNode;
+        }
+        printf("\n");
+    }
+    else{
+        printf("No element in heapless list \n");
+    }
+}
+
 int main(void)
 {
     int testResults = 0;
@@ -203,16 +221,14 @@ int main(void)
         "Ring Buffer - 4.1 Ring buffer indexes in the middle of the array" 
     );
 
-    /*************************************************************************************/
-    /***************************** Testing the heaplessList ******************************/
-    /*************************************************************************************/
-
+    // ---------------------------------------------------------
     functionReturn = true;
     while( functionReturn )
         functionReturn = ringBuffer_addData(&my_rb, my_rb.lenght);
     while( my_rb.lenght > 10 )
         (void)ringBuffer_popData(&my_rb);
 
+    // ---------------------------------------------------------
     functionReturn = ringBuffer_addData(&my_rb, 0xEE);
     testResults |= test(
         (
@@ -223,6 +239,7 @@ int main(void)
         "Ring Buffer - 4.2 Ring buffer indexes in the end and beggining of the array"
     );
 
+    // ---------------------------------------------------------
     popedData = ringBuffer_popData(&my_rb);
     testResults |= test(
         (
@@ -232,6 +249,144 @@ int main(void)
         ),
         "Ring Buffer - 4.3 Ring buffer indexes in the end and beggining of the array"
     );
+
+
+
+
+    /*************************************************************************************/
+    /***************************** Testing the heaplessList ******************************/
+    /*************************************************************************************/
+    heaplessList my_l;
+    tListData my_data;
+    //heaplessListNode my_n;
+
+    // void printlist(heaplessList* l
+
+    // void heaplessList_init(heaplessList* l);
+    // ---------------------------------------------------------
+    heaplessList_init(&my_l);
+    testResults |= test(
+        (
+            my_l.firstNodeIndex == HLL_NULL &&
+            my_l.lastNodeIndex == HLL_NULL
+        ),
+        "HeaplessList - 1. Init List"
+    );
+
+    // bool heaplessList_append(heaplessList* l, tListData data);
+    // ---------------------------------------------------------
+    printlist(&my_l);
+    functionReturn = heaplessList_append(&my_l, 298u); // random number
+    printlist(&my_l);
+    testResults |= test(
+        (
+            functionReturn == true &&
+            my_l.firstNodeIndex == my_l.lastNodeIndex &&
+            my_l.firstNodeIndex != HLL_NULL
+        ),
+        "HeaplessList - 2.1 Add first element to the list"
+    );
+    functionReturn = heaplessList_getFirst(&my_l, &my_data);
+    testResults |= test(
+        (
+            functionReturn == true &&
+            my_data == 298
+        ),
+        "HeaplessList - 2.2 Get first element of the list"
+    );
+
+    functionReturn = heaplessList_append(&my_l, 422u); // random number
+    functionReturn = heaplessList_append(&my_l, 522u);
+    functionReturn = heaplessList_append(&my_l, 225u);
+    functionReturn = heaplessList_append(&my_l, 224u);
+    printlist(&my_l);
+    
+    functionReturn = heaplessList_getFirst(&my_l, &my_data);
+    testResults |= test(
+        (
+            functionReturn == true &&
+            my_data == 298
+        ),
+        "HeaplessList - 2.3 First element stays the same"
+    );
+
+
+    // bool heaplessList_pop(heaplessList* l, tListData* output);
+    // ---------------------------------------------------------
+    functionReturn = heaplessList_pop(&my_l, &my_data);
+    testResults |= test(
+        (
+            functionReturn == true &&
+            my_data == 298
+        ),
+        "HeaplessList - 3.1 pop first element"
+    );
+    functionReturn = heaplessList_getFirst(&my_l, &my_data);
+    testResults |= test(
+        (
+            functionReturn == true &&
+            my_data == 422
+        ),
+        "HeaplessList - 3.2 First element will change"
+    );
+    printlist(&my_l);
+
+    // bool heaplessList_removeFirst(heaplessList* l);
+    // ---------------------------------------------------------
+    functionReturn = heaplessList_removeFirst(&my_l);
+    testResults |= test(
+        functionReturn == true,
+        "HeaplessList - 4.1 remove first element (without getting it)"
+    );
+    functionReturn = heaplessList_getFirst(&my_l, &my_data);
+    testResults |= test(
+        (
+            functionReturn == true &&
+            my_data == 522
+        ),
+        "HeaplessList - 4.2 First element will change"
+    );
+    printlist(&my_l);
+    
+
+    // bool heaplessList_removeLast(heaplessList* l);
+    // ---------------------------------------------------------
+    testResults |= test(
+        (my_l.linkedList[my_l.lastNodeIndex].data == 224 &&
+        functionReturn == true),
+        "HeaplessList - 5.0 check previous state"
+    );
+    functionReturn = heaplessList_removeLast(&my_l);
+    testResults |= test(
+        (my_l.linkedList[my_l.lastNodeIndex].data == 225 &&
+        functionReturn == true),
+        "HeaplessList - 5.1 remove last element (without getting it)"
+    );
+    functionReturn = heaplessList_getFirst(&my_l, &my_data);
+    testResults |= test(
+        (
+            functionReturn == true &&
+            my_data == 522
+        ),
+        "HeaplessList - 5.2 First element will not change"
+    );
+    printlist(&my_l);
+
+
+    // heaplessListNode* heaplessList_initIt(heaplessList* l);
+    // ---------------------------------------------------------
+
+
+    // bool heaplessList_nextIt(heaplessList* l, heaplessListNode* n);
+    // bool heaplessList_previousIt(heaplessList* l, heaplessListNode* n);
+    // tListData heaplessList_getItData(heaplessListNode* n);
+    // bool heaplessList_removeAndNextIt(heaplessList* l, heaplessListNode* n);
+
+
+
+
+
+
 
     return testResults;
 }

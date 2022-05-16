@@ -24,7 +24,6 @@ typedef struct{
     tIndex nextNode;
 } heaplessListNode;
 
-// linked list type
 typedef struct{
     heaplessListNode linkedList[HEAPLESS_LIST_MAX_SIZE];
     ringBuffer allocationTable;
@@ -32,9 +31,10 @@ typedef struct{
     tIndex lastNodeIndex;
 } heaplessList;
 
-/*****************************************
- ********** function prototypes **********
- *****************************************/
+/*******************************************************
+ ********** function prototypes - Direct access ********
+ ** Those functions will operate directly in the list **
+ *******************************************************/
 
 /**
  * @brief init an empty heapless list,
@@ -91,14 +91,28 @@ bool heaplessList_removeFirst(heaplessList* l);
  */
 bool heaplessList_removeLast(heaplessList* l);
 
+/*******************************************************
+ ********** function prototypes - Iterator *************
+ ** Those functions will operate directly in the list **
+ *******************************************************/
 
 /**
- * @brief Creates a iterator for the heapless list
+ * @brief Creates a iterator for the heapless list starting from the begginning
  * 
  * @param l pointer to the list
  * @return node pointer
  */
 heaplessListNode* heaplessList_initIt(heaplessList* l);
+
+
+/**
+ * @brief Creates a iterator for the heapless list starting from the end
+ * 
+ * @param l pointer to the list
+ * @return node pointer
+ */
+heaplessListNode* heaplessList_initItEnd(heaplessList* l);
+
 
 /**
  * @brief get next node from the heaplessList
