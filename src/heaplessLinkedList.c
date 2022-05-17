@@ -12,7 +12,7 @@
  *****************************************/
 inline static tIndex pointerToIndex(heaplessList* l, heaplessListNode* n)
 {
-    return (tIndex) ( (n - l->linkedList) / sizeof(tListData) );
+    return (tIndex) (n - l->linkedList) ;
 }
 
 /*****************************************
@@ -23,6 +23,14 @@ inline static tIndex pointerToIndex(heaplessList* l, heaplessListNode* n)
 void heaplessList_init(heaplessList* l, tIndex* ringBufferArray, heaplessListNode* heapArray, tIndex maxSize)
 {
     tIndex i;
+
+    //check inputs
+    if( NULL_PTR == l || NULL_PTR == ringBufferArray ||
+        NULL_PTR == heapArray || 0u == maxSize ){
+        HLL_ASSERT(false,1);
+        return;
+    }
+
     l->linkedList = heapArray; 
     l->cMaxLength = maxSize;
     l->firstNodeIndex = HLL_NULL;
@@ -135,19 +143,35 @@ bool heaplessList_removeLast(heaplessList* l)
 // --------------------------------------------------------------------
 heaplessListNode* heaplessList_initIt(heaplessList* l)
 {
-    return &( l->linkedList[l->firstNodeIndex] );
+    heaplessListNode* it;
+
+    if( HLL_NULL == l->firstNodeIndex )
+        it = NULL_PTR;
+    else
+        it = &( l->linkedList[l->firstNodeIndex] );
+    return it;
 }
 
 // --------------------------------------------------------------------
 heaplessListNode* heaplessList_initItEnd(heaplessList* l)
 {
-    return &( l->linkedList[l->lastNodeIndex] );
+    heaplessListNode* it;
+
+    if( HLL_NULL == l->lastNodeIndex )
+        it = NULL_PTR;
+    else
+        it = &( l->linkedList[l->lastNodeIndex] );
+    return it;
 }
 
 // --------------------------------------------------------------------
 bool heaplessList_nextIt(heaplessList* l, heaplessListNode** n)
 {
     bool isNotLastElement;
+
+    if( NULL_PTR == *n ){
+        isNotLastElement = false;
+    }
     if(HLL_NULL == (*n)->nextNode){
         isNotLastElement = false;
     }
@@ -161,28 +185,36 @@ bool heaplessList_nextIt(heaplessList* l, heaplessListNode** n)
 // --------------------------------------------------------------------
 bool heaplessList_previousIt(heaplessList* l, heaplessListNode** n)
 {
-    bool isFirstElement;
+    bool isNotFirstElement;
+
+    if( NULL_PTR == *n ){
+        isNotFirstElement = false;
+    }
     if(HLL_NULL == (*n)->previousNode){
-        isFirstElement = false;
+        isNotFirstElement = false;
     }
     else{
         *n = &( l->linkedList[(*n)->previousNode] );
-        isFirstElement = true;
+        isNotFirstElement = true;
     }
-    return isFirstElement;
+    return isNotFirstElement;
 }
 
 // --------------------------------------------------------------------
 tListData heaplessList_getItData(heaplessListNode* n)
 {
-    return n->data;
+    return NULL_PTR == n ? ~0 : n->data;
 }
 
 // --------------------------------------------------------------------
 bool heaplessList_removeAndNextIt(heaplessList* l, heaplessListNode** n)
 {
     bool isOperationOk = true;
-    if(HLL_NULL == (*n)->previousNode){ // isFirstElement
+
+    if( NULL_PTR == *n ){ //No elements in the list or pointer not initialized
+        isOperationOk = false;
+    }
+    else if(HLL_NULL == (*n)->previousNode){ // isFirstElement
         isOperationOk = heaplessList_removeFirst(l);
         *n = heaplessList_initIt(l);
     }

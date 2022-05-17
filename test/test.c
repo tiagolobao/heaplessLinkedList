@@ -3,7 +3,7 @@
 #include "heaplessLinkedList.h"
 #include "ringBuffer.h"
 
-#define HEAPLESS_LIST_MAX_SIZE 300
+#define HEAPLESS_LIST_MAX_SIZE 20
 
 static tIndex ringBufferArray[HEAPLESS_LIST_MAX_SIZE];
 
@@ -253,7 +253,7 @@ int main(void)
     popedData = ringBuffer_popData(&my_rb);
     testResults |= test(
         (
-            popedData == 290 &&
+            popedData == 10 &&
             my_rb.lenght == 10u &&
             my_rb.buffer[my_rb.headIndex-1] == 0xEE
         ),
@@ -285,9 +285,7 @@ int main(void)
 
     // bool heaplessList_append(heaplessList* l, tListData data);
     // ---------------------------------------------------------
-    printlist(&my_l);
     functionReturn = heaplessList_append(&my_l, 298u); // random number
-    printlist(&my_l);
     testResults |= test(
         (
             functionReturn == true &&
@@ -309,7 +307,6 @@ int main(void)
     functionReturn = heaplessList_append(&my_l, 522u);
     functionReturn = heaplessList_append(&my_l, 225u);
     functionReturn = heaplessList_append(&my_l, 224u);
-    printlist(&my_l);
     
     functionReturn = heaplessList_getFirst(&my_l, &my_data);
     testResults |= test(
@@ -339,7 +336,6 @@ int main(void)
         ),
         "HeaplessList - 3.2 First element will change"
     );
-    printlist(&my_l);
 
     // bool heaplessList_removeFirst(heaplessList* l);
     // ---------------------------------------------------------
@@ -356,7 +352,6 @@ int main(void)
         ),
         "HeaplessList - 4.2 First element will change"
     );
-    printlist(&my_l);
     
 
     // bool heaplessList_removeLast(heaplessList* l);
@@ -384,7 +379,6 @@ int main(void)
         ),
         "HeaplessList - 5.2 First element will not change"
     );
-    printlist(&my_l);
 
 
     // heaplessListNode* heaplessList_initItEnd(heaplessList* l);
@@ -401,7 +395,7 @@ int main(void)
     my_n = heaplessList_initIt(&my_l);
     testResults |= test(
             heaplessList_getItData(my_n) == 522,
-        "HeaplessList - 6.1 Init Iterator from the beggining"
+        "HeaplessList - 6.2 Init Iterator from the beggining"
     );
 
     // bool heaplessList_nextIt(heaplessList* l, heaplessListNode* n);
@@ -449,7 +443,6 @@ int main(void)
     // ---------------------------------------------------------
     // ---------------------------------------------------------
     while( heaplessList_removeLast(&my_l) ); // empty the list
-    printlist(&my_l);
 
     count = 20;
     while( heaplessList_append(&my_l, count) ) count++;
@@ -471,10 +464,50 @@ int main(void)
         count++;
     }
 
-    my_n = heaplessList_initIt(&my_l);
     // bool heaplessList_removeAndNextIt(heaplessList* l, heaplessListNode** n);
+    // ---------------------------------------------------------
+    while( heaplessList_removeFirst(&my_l) ); // empty the list
+    printlist(&my_l);
+    // put some elements
+    heaplessList_append(&my_l, 10u);
+    heaplessList_append(&my_l, 11u);
+    heaplessList_append(&my_l, 12u);
+    heaplessList_append(&my_l, 13u);
+    heaplessList_append(&my_l, 14u);
 
-    
+    my_n = heaplessList_initIt(&my_l);
+    testResults |= test( heaplessList_getItData(my_n) == 10u,
+            "HeaplessList - 9.1 start iterator");
+
+    // go to the middle of the list
+    functionReturn = heaplessList_nextIt(&my_l, &my_n);
+    testResults |= test( heaplessList_getItData(my_n) == 11u && functionReturn == true,
+            "HeaplessList - 9.2 go to next element with iterator");
+
+    functionReturn = heaplessList_nextIt(&my_l, &my_n);
+    testResults |= test( heaplessList_getItData(my_n) == 12u && functionReturn == true,
+            "HeaplessList - 9.3 go to next element with iterator");
+
+    functionReturn = heaplessList_removeAndNextIt(&my_l, &my_n);
+    testResults |= test( heaplessList_getItData(my_n) == 13u && functionReturn == true,
+            "HeaplessList - 9.5 remove element in the middle");
+
+    functionReturn = heaplessList_nextIt(&my_l, &my_n);
+    testResults |= test( heaplessList_getItData(my_n) == 14u && functionReturn == true,
+            "HeaplessList - 9.6 go to next element with iterator");
+
+    functionReturn = heaplessList_removeAndNextIt(&my_l, &my_n);
+    testResults |= test( heaplessList_getItData(my_n) == 0xFFFF && functionReturn == true,
+            "HeaplessList - 9.7 remove last element with iterator");
+
+    printlist(&my_l);
+
+    // Fill List till the end
+    count = 100;
+    while( heaplessList_append(&my_l, count) ) count++;
+    printlist(&my_l);
+
+    heaplessList_append(&my_l, 200u);
 
     return testResults;
 }

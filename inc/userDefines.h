@@ -10,6 +10,7 @@
 
 #include <inttypes.h>
 #include <stdbool.h>
+#include <stdio.h>
 
 /*****************************************
  ********* user changable defines ********
@@ -23,5 +24,7 @@ typedef uint16_t tListData;
 // Depends on the maximum number of elements in the list/array
 typedef uint16_t tIndex;
 
+// Asserts depends on the environment
+#define HLL_ASSERT(c,n) !c ? printf("ASSERT: error number %d", n) /*print error*/ : false /*dummy statement*/ ;
 
 #endif /* HLL_USERDEFINES_H */

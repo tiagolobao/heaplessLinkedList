@@ -11,7 +11,7 @@
 #include "ringBuffer.h"
 
 #ifndef NULL_PTR
-#define NULL_PTR 0u
+#define NULL_PTR (void*)0u
 #endif
 
 /*****************************************
