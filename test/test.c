@@ -268,9 +268,6 @@ int main(void)
     /*************************************************************************************/
     heaplessList my_l;
     tListData my_data;
-    //heaplessListNode my_n;
-
-    // void printlist(heaplessList* l
 
     // void heaplessList_init(heaplessList* l);
     // ---------------------------------------------------------
@@ -467,7 +464,7 @@ int main(void)
     // bool heaplessList_removeAndNextIt(heaplessList* l, heaplessListNode** n);
     // ---------------------------------------------------------
     while( heaplessList_removeFirst(&my_l) ); // empty the list
-    printlist(&my_l);
+
     // put some elements
     heaplessList_append(&my_l, 10u);
     heaplessList_append(&my_l, 11u);
@@ -500,14 +497,17 @@ int main(void)
     testResults |= test( heaplessList_getItData(my_n) == 0xFFFF && functionReturn == true,
             "HeaplessList - 9.7 remove last element with iterator");
 
-    printlist(&my_l);
+
 
     // Fill List till the end
     count = 100;
     while( heaplessList_append(&my_l, count) ) count++;
-    printlist(&my_l);
 
     heaplessList_append(&my_l, 200u);
+
+    if( 0 == testResults){
+        printf("All Tests passed!\n");
+    }
 
     return testResults;
 }
