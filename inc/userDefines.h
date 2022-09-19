@@ -11,6 +11,7 @@
 #include <inttypes.h>
 #include <stdbool.h>
 #include <stdio.h>
+#include "FreeRTOS.h"
 
 /*****************************************
  ********* user changable defines ********
@@ -18,13 +19,13 @@
 
 // This is the type of data stored inside the linked list
 // It does not support strucs, but maybe you can store a pointer
-typedef uint16_t tListData;
+typedef uint8_t tListData;
 #define HLL_NULL 0xFFFF
 
 // Depends on the maximum number of elements in the list/array
 typedef uint16_t tIndex;
 
 // Asserts depends on the environment
-#define HLL_ASSERT(c,n) !c ? printf("ASSERT: error number %d", n) /*print error*/ : false /*dummy statement*/ ;
+#define HLL_ASSERT(c,n) configASSERT(c)
 
 #endif /* HLL_USERDEFINES_H */
